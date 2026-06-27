@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Nailo Remote</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f0f13;
+    --surface: #1a1a22;
+    --surface2: #22222e;
+    --border: #2e2e3e;
+    --accent: #7c6af7;
+    --accent2: #5b52c7;
+    --text: #e8e8f0;
+    --muted: #888899;
+    --green: #4caf7d;
+    --red: #e05555;
+    --amber: #e0a030;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* ── LOGIN ── */
+  #login-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 24px;
+  }
+
+  .login-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px 28px;
+    width: 100%;
+    max-width: 360px;
+  }
+
+  .login-logo {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  .login-logo h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 2px;
+  }
+
+  .login-logo p {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 4px;
+  }
+
+  input[type="email"], input[type="password"] {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 13px 16px;
+    color: var(--text);
+    font-size: 15px;
+    margin-bottom: 12px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input:focus { border-color: var(--accent); }
+
+  .btn-primary {
+    width: 100%;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    margin-top: 4px;
+  }
+
+  .btn-primary:active { transform: scale(0.98); background: var(--accent2); }
+
+  .login-error {
+    color: var(--red);
+    font-size: 13px;
+    text-align: center;
+    margin-top: 12px;
+    min-height: 18px;
+  }
+
+  /* ── MAIN APP ── */
+  #app-screen { display: none; }
+
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .topbar h1 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 1px;
+  }
+
+  .status-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .status-dot {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--red);
+    transition: background 0.3s;
+  }
+
+  .dot.online { background: var(--green); }
+
+  .btn-logout {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  /* ── CONTENT ── */
+  .content { padding: 16px; max-width: 600px; margin: 0 auto; }
+
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 14px;
+  }
+
+  .section-title {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  /* ── CHAT ── */
+  .chat-messages {
+    background: var(--surface2);
+    border-radius: 10px;
+    padding: 12px;
+    min-height: 140px;
+    max-height: 260px;
+    overflow-y: auto;
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .msg {
+    max-width: 85%;
+    padding: 9px 13px;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  .msg.user {
+    background: var(--accent);
+    color: #fff;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+  }
+
+  .msg.kate {
+    background: var(--border);
+    color: var(--text);
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+  }
+
+  .msg.system {
+    color: var(--muted);
+    font-size: 12px;
+    align-self: center;
+    background: none;
+    padding: 2px 0;
+  }
+
+  .chat-input-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .chat-input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    color: var(--text);
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .chat-input:focus { border-color: var(--accent); }
+
+  .btn-send {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 18px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+
+  .btn-send:active { transform: scale(0.95); background: var(--accent2); }
+
+  /* ── DEVICE BUTTONS ── */
+  .device-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .device-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, transform 0.1s;
+  }
+
+  .device-btn:active { transform: scale(0.97); }
+
+  .device-btn.active {
+    border-color: var(--accent);
+    background: rgba(124, 106, 247, 0.12);
+  }
+
+  .device-btn.active .device-icon { color: var(--accent); }
+
+  .device-icon { font-size: 26px; }
+  .device-label { font-size: 13px; color: var(--muted); }
+  .device-state { font-size: 11px; font-weight: 600; color: var(--muted); }
+  .device-btn.active .device-state { color: var(--accent); }
+
+  /* ── PC BUTTON ── */
+  .pc-btn {
+    width: 100%;
+    background: var(--surface2);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+  }
+
+  .pc-btn:active { transform: scale(0.98); }
+
+  .pc-btn.online-state {
+    border-color: var(--green);
+    background: rgba(76, 175, 125, 0.08);
+  }
+
+  .pc-icon { font-size: 32px; }
+
+  .pc-info h3 { font-size: 15px; font-weight: 600; }
+  .pc-info p  { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* ── SERVO ── */
+  .servo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .servo-item label {
+    font-size: 12px;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .servo-item input[type="range"] {
+    width: 100%;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+
+  .servo-val {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    margin-top: 4px;
+  }
+
+  .btn-servo-send {
+    width: 100%;
+    margin-top: 14px;
+    background: var(--surface2);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-servo-send:active { background: var(--accent); color: #fff; }
+
+  /* spinner */
+  .spinner {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+    margin-left: 6px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- ══════════════ LOGIN ══════════════ -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <h1>NAILO</h1>
+      <p>Система удалённого управления</p>
+    </div>
+    <input type="email" id="email" placeholder="Email" autocomplete="email">
+    <input type="password" id="password" placeholder="Пароль" autocomplete="current-password">
+    <button class="btn-primary" onclick="doLogin()">Войти</button>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+
+<!-- ══════════════ APP ══════════════ -->
+<div id="app-screen">
+
+  <div class="topbar">
+    <h1>NAILO</h1>
+    <div class="status-row">
+      <div class="status-dot">
+        <div class="dot" id="dot-pc"></div>
+        <span>ПК</span>
+      </div>
+      <div class="status-dot">
+        <div class="dot" id="dot-esp"></div>
+        <span>ESP32</span>
+      </div>
+      <button class="btn-logout" onclick="doLogout()">Выйти</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- CHAT -->
+    <div class="section">
+      <div class="section-title">💬 Чат с Кейт</div>
+      <div class="chat-messages" id="chat-messages">
+        <div class="msg system">Подключение...</div>
+      </div>
+      <div class="chat-input-row">
+        <input class="chat-input" id="chat-input" type="text"
+          placeholder="Написать Кейт..."
+          onkeydown="if(event.key==='Enter') sendMessage()">
+        <button class="btn-send" onclick="sendMessage()">➤</button>
+      </div>
+    </div>
+
+    <!-- PC -->
+    <div class="section">
+      <div class="section-title">🖥️ Компьютер</div>
+      <div class="pc-btn" id="pc-btn" onclick="togglePC()">
+        <div class="pc-icon">🖥️</div>
+        <div class="pc-info">
+          <h3 id="pc-title">ПК выключен</h3>
+          <p id="pc-sub">Нажми чтобы включить через ESP32</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- УСТРОЙСТВА -->
+    <div class="section">
+      <div class="section-title">🏠 Устройства</div>
+      <div class="device-grid">
+        <div class="device-btn" id="btn-light" onclick="toggleDevice('light_room', 'light:')">
+          <div class="device-icon">💡</div>
+          <div class="device-label">Свет</div>
+          <div class="device-state" id="state-light">выкл</div>
+        </div>
+        <div class="device-btn" id="btn-relay1" onclick="toggleDevice('relay_1', 'relay1:')">
+          <div class="device-icon">🔌</div>
+          <div class="device-label">Реле 1</div>
+          <div class="device-state" id="state-relay1">выкл</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SERVO -->
+    <div class="section">
+      <div class="section-title">🤖 Сервоприводы</div>
+      <div class="servo-grid">
+        <div class="servo-item">
+          <label>База (B)</label>
+          <input type="range" min="0" max="180" value="90" id="servo-b"
+            oninput="document.getElementById('val-b').textContent=this.value+'°'">
+          <div class="servo-val" id="val-b">90°</div>
+        </div>
+        <div class="servo-item">
+          <label>Плечо (P)</label>
+          <input type="range" min="0" max="180" value="90" id="servo-p"
+            oninput="document.getElementById('val-p').textContent=this.value+'°'">
+          <div class="servo-val" id="val-p">90°</div>
+        </div>
+        <div class="servo-item">
+          <label>Локоть (L)</label>
+          <input type="range" min="0" max="180" value="90" id="servo-l"
+            oninput="document.getElementById('val-l').textContent=this.value+'°'">
+          <div class="servo-val" id="val-l">90°</div>
+        </div>
+        <div class="servo-item">
+          <label>Камера (K)</label>
+          <input type="range" min="0" max="180" value="90" id="servo-k"
+            oninput="document.getElementById('val-k').textContent=this.value+'°'">
+          <div class="servo-val" id="val-k">90°</div>
+        </div>
+      </div>
+      <button class="btn-servo-send" onclick="sendServos()">Отправить положение</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════ FIREBASE SDK ══════════════ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getDatabase, ref, set, onValue, get }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDdVxg4VLuhTP6diYR3ylwVUH5d_6TXQhE",
+  authDomain: "nailo-343e0.firebaseapp.com",
+  databaseURL: "https://nailo-343e0-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "nailo-343e0",
+  storageBucket: "nailo-343e0.firebasestorage.app",
+  messagingSenderId: "400611042263",
+  appId: "1:400611042263:web:979fc6905ed4f39b902192"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getDatabase(app);
+
+// ── Состояние устройств ──
+let deviceStates = { light_room: false, relay_1: false };
+let pcOnline = false;
+let lastKateReply = "";
+
+// ══════════════════════════════════
+//  AUTH
+// ══════════════════════════════════
+window.doLogin = async () => {
+  const email = document.getElementById("email").value.trim();
+  const pass  = document.getElementById("password").value;
+  const errEl = document.getElementById("login-error");
+  errEl.textContent = "";
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+  } catch(e) {
+    errEl.textContent = "Неверный email или пароль";
+  }
+};
+
+window.doLogout = () => signOut(auth);
+
+onAuthStateChanged(auth, user => {
+  if (user) {
+    document.getElementById("login-screen").style.display = "none";
+    document.getElementById("app-screen").style.display = "block";
+    startListeners();
+  } else {
+    document.getElementById("login-screen").style.display = "flex";
+    document.getElementById("app-screen").style.display = "none";
+  }
+});
+
+// ══════════════════════════════════
+//  LISTENERS
+// ══════════════════════════════════
+function startListeners() {
+  addMsg("system", "Подключено к Nailo ✓");
+
+  // Статус ПК
+  onValue(ref(db, "/status/pc_online"), snap => {
+    pcOnline = snap.val() === true;
+    updatePcUI();
+  });
+
+  // Статус ESP32
+  onValue(ref(db, "/status/esp32_online"), snap => {
+    const on = snap.val() === true;
+    document.getElementById("dot-esp").className = "dot" + (on ? " online" : "");
+  });
+
+  // Ответ Кейт
+  onValue(ref(db, "/chat/kate_reply"), snap => {
+    const reply = snap.val();
+    if (reply && reply !== "" && reply !== lastKateReply) {
+      lastKateReply = reply;
+      addMsg("kate", reply);
+    }
+  });
+
+  // Устройства
+  onValue(ref(db, "/devices"), snap => {
+    const d = snap.val() || {};
+    deviceStates.light_room = !!d.light_room;
+    deviceStates.relay_1    = !!d.relay_1;
+    updateDeviceUI("light",  deviceStates.light_room);
+    updateDeviceUI("relay1", deviceStates.relay_1);
+  });
+}
+
+// ══════════════════════════════════
+//  CHAT
+// ══════════════════════════════════
+window.sendMessage = async () => {
+  const input = document.getElementById("chat-input");
+  const text  = input.value.trim();
+  if (!text) return;
+  input.value = "";
+
+  addMsg("user", text);
+  await set(ref(db, "/chat/user_message"), text);
+  await set(ref(db, "/chat/kate_reply"), "");
+  lastKateReply = "";
+};
+
+function addMsg(type, text) {
+  const box = document.getElementById("chat-messages");
+  const div = document.createElement("div");
+  div.className = "msg " + type;
+  div.textContent = type === "kate" ? "Кейт: " + text : text;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+
+// ══════════════════════════════════
+//  PC
+// ══════════════════════════════════
+function updatePcUI() {
+  const btn = document.getElementById("pc-btn");
+  const dotPc = document.getElementById("dot-pc");
+  dotPc.className = "dot" + (pcOnline ? " online" : "");
+  if (pcOnline) {
+    btn.className = "pc-btn online-state";
+    document.getElementById("pc-title").textContent = "ПК онлайн";
+    document.getElementById("pc-sub").textContent = "Кейт готова к работе";
+  } else {
+    btn.className = "pc-btn";
+    document.getElementById("pc-title").textContent = "ПК выключен";
+    document.getElementById("pc-sub").textContent = "Нажми чтобы включить через ESP32";
+  }
+}
+
+window.togglePC = async () => {
+  if (!pcOnline) {
+    await set(ref(db, "/commands/pending"), "pc:wakeup");
+    addMsg("system", "Отправлен сигнал включения...");
+  }
+};
+
+// ══════════════════════════════════
+//  УСТРОЙСТВА
+// ══════════════════════════════════
+window.toggleDevice = async (key, cmdPrefix) => {
+  const newState = !deviceStates[key];
+  const cmd = cmdPrefix + (newState ? "on" : "off");
+  await set(ref(db, "/commands/pending"), cmd);
+};
+
+function updateDeviceUI(name, state) {
+  const btn   = document.getElementById("btn-" + name);
+  const stEl  = document.getElementById("state-" + name);
+  if (state) {
+    btn.classList.add("active");
+    stEl.textContent = "вкл";
+  } else {
+    btn.classList.remove("active");
+    stEl.textContent = "выкл";
+  }
+}
+
+// ══════════════════════════════════
+//  СЕРВОПРИВОДЫ
+// ══════════════════════════════════
+window.sendServos = async () => {
+  const axes = ["b","p","l","k"];
+  for (const a of axes) {
+    const val = document.getElementById("servo-" + a).value;
+    await set(ref(db, "/commands/pending"), `servo:${a}:${val}`);
+    await new Promise(r => setTimeout(r, 900)); // пауза между командами
+  }
+  addMsg("system", "Серво отправлены ✓");
+};
+
+</script>
+</body>
+</html>
