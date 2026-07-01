@@ -10,7 +10,7 @@
     --bg: #0f0f13; --surface: #1a1a22; --surface2: #22222e;
     --border: #2e2e3e; --accent: #7c6af7; --accent2: #5b52c7;
     --text: #e8e8f0; --muted: #888899;
-    --green: #4caf7d; --red: #e05555;
+    --green: #4caf7d; --red: #e05555; --amber: #e0a030;
   }
   body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; min-height: 100vh; }
 
@@ -20,11 +20,7 @@
   .login-logo { text-align: center; margin-bottom: 28px; }
   .login-logo h1 { font-size: 28px; font-weight: 700; color: var(--accent); letter-spacing: 2px; }
   .login-logo p { color: var(--muted); font-size: 13px; margin-top: 4px; }
-  input[type="email"], input[type="password"] {
-    width: 100%; background: var(--surface2); border: 1px solid var(--border);
-    border-radius: 10px; padding: 13px 16px; color: var(--text); font-size: 15px;
-    margin-bottom: 12px; outline: none; transition: border-color 0.2s;
-  }
+  input[type="email"], input[type="password"] { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; color: var(--text); font-size: 15px; margin-bottom: 12px; outline: none; transition: border-color 0.2s; }
   input:focus { border-color: var(--accent); }
   .btn-primary { width: 100%; background: var(--accent); color: #fff; border: none; border-radius: 10px; padding: 14px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s; margin-top: 4px; }
   .btn-primary:active { transform: scale(0.98); background: var(--accent2); }
@@ -39,9 +35,20 @@
   .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); transition: background 0.3s; }
   .dot.online { background: var(--green); }
   .btn-logout { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 8px; padding: 6px 12px; font-size: 12px; cursor: pointer; }
-  .content { padding: 16px; max-width: 600px; margin: 0 auto; }
+  .content { padding: 16px; max-width: 600px; margin: 0 auto; padding-bottom: 32px; }
   .section { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px; margin-bottom: 14px; }
   .section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 14px; }
+
+  /* SENSORS */
+  .sensor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .sensor-card { background: var(--surface2); border-radius: 12px; padding: 16px; text-align: center; }
+  .sensor-icon { font-size: 28px; margin-bottom: 6px; }
+  .sensor-val { font-size: 26px; font-weight: 700; color: var(--text); }
+  .sensor-val span { font-size: 14px; font-weight: 400; color: var(--muted); }
+  .sensor-label { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .sensor-updated { font-size: 10px; color: var(--muted); text-align: center; margin-top: 10px; }
+  .btn-refresh { width: 100%; margin-top: 10px; background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 8px; padding: 8px; font-size: 12px; cursor: pointer; transition: border-color 0.2s; }
+  .btn-refresh:active { border-color: var(--accent); color: var(--accent); }
 
   /* CHAT */
   .chat-messages { background: var(--surface2); border-radius: 10px; padding: 12px; min-height: 140px; max-height: 260px; overflow-y: auto; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px; }
@@ -63,28 +70,34 @@
   .pc-info h3 { font-size: 15px; font-weight: 600; }
   .pc-info p  { font-size: 12px; color: var(--muted); margin-top: 2px; }
 
-  /* DEVICES */
-  .device-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .device-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 16px 12px; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; transition: border-color 0.2s, background 0.2s, transform 0.1s; }
-  .device-btn:active { transform: scale(0.97); }
-  .device-btn.active { border-color: var(--accent); background: rgba(124,106,247,0.12); }
-  .device-btn.active .device-icon, .device-btn.active .device-state { color: var(--accent); }
-  .device-icon { font-size: 26px; }
-  .device-label { font-size: 13px; color: var(--muted); }
-  .device-state { font-size: 11px; font-weight: 600; color: var(--muted); }
+  /* RELAY GRID */
+  .relay-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .relay-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 14px 10px; display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; transition: all 0.2s; }
+  .relay-btn:active { transform: scale(0.97); }
+  .relay-btn.active { border-color: var(--accent); background: rgba(124,106,247,0.12); }
+  .relay-num { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .relay-icon { font-size: 22px; }
+  .relay-name { font-size: 13px; color: var(--text); }
+  .relay-state { font-size: 11px; color: var(--muted); font-weight: 600; }
+  .relay-btn.active .relay-state { color: var(--accent); }
+  .relay-btn.active .relay-icon { filter: brightness(1.3); }
+  .relay-all-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+  .btn-all { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 10px; padding: 10px; font-size: 13px; cursor: pointer; transition: all 0.2s; }
+  .btn-all:active { border-color: var(--accent); color: var(--accent); }
 
   /* SERVO */
   .servo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   .servo-item label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 6px; }
   .servo-item input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer; }
   .servo-val { font-size: 13px; font-weight: 600; color: var(--accent); margin-top: 4px; }
-  .btn-servo-send { width: 100%; margin-top: 14px; background: var(--accent); color: #fff; border: none; border-radius: 10px; padding: 14px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .servo-preview { margin-top: 10px; background: var(--surface2); border-radius: 8px; padding: 10px 14px; font-size: 12px; color: var(--muted); font-family: monospace; }
+  .btn-servo-send { width: 100%; margin-top: 10px; background: var(--accent); color: #fff; border: none; border-radius: 10px; padding: 14px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
   .btn-servo-send:active { background: var(--accent2); transform: scale(0.98); }
-  .servo-preview { margin-top: 10px; background: var(--surface2); border-radius: 8px; padding: 10px 14px; font-size: 12px; color: var(--muted); font-family: monospace; letter-spacing: 0.5px; }
 </style>
 </head>
 <body>
 
+<!-- LOGIN -->
 <div id="login-screen">
   <div class="login-box">
     <div class="login-logo">
@@ -98,6 +111,7 @@
   </div>
 </div>
 
+<!-- APP -->
 <div id="app-screen">
   <div class="topbar">
     <h1>NAILO</h1>
@@ -109,6 +123,25 @@
   </div>
 
   <div class="content">
+
+    <!-- SENSORS -->
+    <div class="section">
+      <div class="section-title">🌡️ Климат</div>
+      <div class="sensor-grid">
+        <div class="sensor-card">
+          <div class="sensor-icon">🌡️</div>
+          <div class="sensor-val" id="val-temp">—<span>°C</span></div>
+          <div class="sensor-label">Температура</div>
+        </div>
+        <div class="sensor-card">
+          <div class="sensor-icon">💧</div>
+          <div class="sensor-val" id="val-hum">—<span>%</span></div>
+          <div class="sensor-label">Влажность</div>
+        </div>
+      </div>
+      <div class="sensor-updated" id="sensor-updated">Обновление...</div>
+      <button class="btn-refresh" onclick="refreshSensors()">↻ Обновить сейчас</button>
+    </div>
 
     <!-- CHAT -->
     <div class="section">
@@ -135,20 +168,13 @@
       </div>
     </div>
 
-    <!-- УСТРОЙСТВА -->
+    <!-- RELAY -->
     <div class="section">
-      <div class="section-title">🏠 Устройства</div>
-      <div class="device-grid">
-        <div class="device-btn" id="btn-light" onclick="toggleDevice('light_room','light:')">
-          <div class="device-icon">💡</div>
-          <div class="device-label">Свет</div>
-          <div class="device-state" id="state-light">выкл</div>
-        </div>
-        <div class="device-btn" id="btn-relay1" onclick="toggleDevice('relay_1','relay1:')">
-          <div class="device-icon">🔌</div>
-          <div class="device-label">Реле 1</div>
-          <div class="device-state" id="state-relay1">выкл</div>
-        </div>
+      <div class="section-title">⚡ Реле</div>
+      <div class="relay-grid" id="relay-grid"></div>
+      <div class="relay-all-row">
+        <button class="btn-all" onclick="relayAll(true)">Все включить</button>
+        <button class="btn-all" onclick="relayAll(false)">Все выключить</button>
       </div>
     </div>
 
@@ -177,7 +203,6 @@
           <div class="servo-val" id="val-k">90°</div>
         </div>
       </div>
-      <!-- превью команды -->
       <div class="servo-preview" id="servo-preview">servo:b90p90l90k90</div>
       <button class="btn-servo-send" onclick="sendServos()">Отправить положение</button>
     </div>
@@ -204,9 +229,31 @@ const app = initializeApp({
 const auth = getAuth(app);
 const db   = getDatabase(app);
 
-let deviceStates = { light_room: false, relay_1: false };
+// Названия реле — меняй под свои устройства
+const RELAY_NAMES = ["Реле 1","Реле 2","Реле 3","Реле 4","Реле 5","Реле 6","Реле 7","Реле 8"];
+const RELAY_ICONS = ["💡","💡","🔌","🔌","🔌","🔌","🔌","🔌"];
+
+let relayStates = new Array(8).fill(false);
 let pcOnline = false;
 let lastKateReply = "";
+
+// ── BUILD RELAY BUTTONS ──
+function buildRelays() {
+  const grid = document.getElementById("relay-grid");
+  grid.innerHTML = "";
+  for (let i = 1; i <= 8; i++) {
+    const btn = document.createElement("div");
+    btn.className = "relay-btn";
+    btn.id = "relay-btn-" + i;
+    btn.innerHTML = `
+      <div class="relay-num">IN${i}</div>
+      <div class="relay-icon">${RELAY_ICONS[i-1]}</div>
+      <div class="relay-name">${RELAY_NAMES[i-1]}</div>
+      <div class="relay-state" id="relay-state-${i}">выкл</div>`;
+    btn.onclick = () => toggleRelay(i);
+    grid.appendChild(btn);
+  }
+}
 
 // ── AUTH ──
 window.doLogin = async () => {
@@ -222,6 +269,7 @@ onAuthStateChanged(auth, user => {
   if (user) {
     document.getElementById("login-screen").style.display = "none";
     document.getElementById("app-screen").style.display = "block";
+    buildRelays();
     startListeners();
   } else {
     document.getElementById("login-screen").style.display = "flex";
@@ -233,20 +281,43 @@ onAuthStateChanged(auth, user => {
 function startListeners() {
   addMsg("system", "Подключено ✓");
 
+  // Статусы
   onValue(ref(db, "/status/pc_online"), s => { pcOnline = s.val() === true; updatePcUI(); });
   onValue(ref(db, "/status/esp32_online"), s => {
     document.getElementById("dot-esp").className = "dot" + (s.val() === true ? " online" : "");
   });
+
+  // Чат
   onValue(ref(db, "/chat/kate_reply"), s => {
     const r = s.val();
     if (r && r !== "" && r !== lastKateReply) { lastKateReply = r; addMsg("kate", r); }
   });
+
+  // Реле
   onValue(ref(db, "/devices"), s => {
     const d = s.val() || {};
-    deviceStates.light_room = !!d.light_room;
-    deviceStates.relay_1    = !!d.relay_1;
-    updateDeviceUI("light",  deviceStates.light_room);
-    updateDeviceUI("relay1", deviceStates.relay_1);
+    for (let i = 1; i <= 8; i++) {
+      relayStates[i-1] = !!d["relay" + i];
+      updateRelayUI(i, relayStates[i-1]);
+    }
+  });
+
+  // Датчики
+  onValue(ref(db, "/sensors"), s => {
+    const d = s.val() || {};
+    const temp = d.temperature;
+    const hum  = d.humidity;
+    if (temp !== undefined && temp !== null) {
+      document.getElementById("val-temp").innerHTML = temp + '<span>°C</span>';
+    }
+    if (hum !== undefined && hum !== null) {
+      document.getElementById("val-hum").innerHTML = hum + '<span>%</span>';
+    }
+    if (temp || hum) {
+      const now = new Date();
+      document.getElementById("sensor-updated").textContent =
+        "Обновлено в " + now.toLocaleTimeString("ru-RU", {hour:"2-digit", minute:"2-digit"});
+    }
   });
 }
 
@@ -281,15 +352,27 @@ window.togglePC = async () => {
   if (!pcOnline) { await set(ref(db, "/commands/pending"), "pc:wakeup"); addMsg("system", "Сигнал включения отправлен..."); }
 };
 
-// ── DEVICES ──
-window.toggleDevice = async (key, prefix) => {
-  const newState = !deviceStates[key];
-  await set(ref(db, "/commands/pending"), prefix + (newState ? "on" : "off"));
+// ── RELAY ──
+window.toggleRelay = async (num) => {
+  const newState = !relayStates[num - 1];
+  await set(ref(db, "/commands/pending"), `relay${num}:${newState ? "on" : "off"}`);
 };
-function updateDeviceUI(name, state) {
-  document.getElementById("btn-" + name).className = "device-btn" + (state ? " active" : "");
-  document.getElementById("state-" + name).textContent = state ? "вкл" : "выкл";
+window.relayAll = async (on) => {
+  await set(ref(db, "/commands/pending"), "relay:all:" + (on ? "on" : "off"));
+};
+function updateRelayUI(num, state) {
+  const btn   = document.getElementById("relay-btn-" + num);
+  const stEl  = document.getElementById("relay-state-" + num);
+  if (!btn) return;
+  btn.className = "relay-btn" + (state ? " active" : "");
+  stEl.textContent = state ? "вкл" : "выкл";
 }
+
+// ── SENSORS ──
+window.refreshSensors = async () => {
+  await set(ref(db, "/commands/pending"), "sensors:get");
+  document.getElementById("sensor-updated").textContent = "Запрос отправлен...";
+};
 
 // ── SERVO ──
 window.updateServo = () => {
@@ -303,7 +386,6 @@ window.updateServo = () => {
   document.getElementById("val-k").textContent = k + "°";
   document.getElementById("servo-preview").textContent = `servo:b${b}p${p}l${l}k${k}`;
 };
-
 window.sendServos = async () => {
   const b = document.getElementById("servo-b").value;
   const p = document.getElementById("servo-p").value;
