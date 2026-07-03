@@ -577,27 +577,58 @@ window.toggleGauge=async(axis,on)=>{
 };
 
 // ── TIMER ──
+// Отправить команду и дождаться пока ESP32 её очистит
+async function sendCmd(cmd, timeoutMs=4000) {
+  await set(ref(db,"/commands/pending"), cmd);
+  return new Promise(resolve=>{
+    const unsub = onValue(ref(db,"/commands/pending"), s=>{
+      const val = s.val();
+      if(val===""||val===null){ unsub(); resolve(true); }
+    });
+    setTimeout(()=>{ unsub(); resolve(false); }, timeoutMs);
+  });
+}
+
 window.timerSet=async()=>{
   const h=parseInt(document.getElementById("t-h").value)||0;
   const m=parseInt(document.getElementById("t-m").value)||0;
   const s=parseInt(document.getElementById("t-s").value)||0;
   const total=h*3600+m*60+s;
   if(total<=0){toast("Задай время больше 0");return;}
-  await set(ref(db,"/commands/pending"),"timer:set:"+total);
-  document.getElementById("timer-status").textContent=`Задан: ${pad(h)}:${pad(m)}:${pad(s)}`;
-  document.getElementById("timer-status").className="timer-status";
-  toast("Таймер задан");
+  document.getElementById("timer-status").textContent="Отправка...";
+  const ok = await sendCmd("timer:set:"+total);
+  if(ok){
+    document.getElementById("timer-status").textContent=`Задан: ${pad(h)}:${pad(m)}:${pad(s)}`;
+    document.getElementById("timer-status").className="timer-status";
+    toast("Таймер задан ✓");
+  } else {
+    toast("ESP32 не ответил");
+  }
 };
+
 window.timerStart=async()=>{
-  await set(ref(db,"/commands/pending"),"timer:start");
-  timerEndTime=Date.now()+getTimerSecs()*1000;
+  const h=parseInt(document.getElementById("t-h").value)||0;
+  const m=parseInt(document.getElementById("t-m").value)||0;
+  const s=parseInt(document.getElementById("t-s").value)||0;
+  const total=h*3600+m*60+s;
+  if(total<=0){toast("Сначала задай время");return;}
+  document.getElementById("timer-status").textContent="Установка...";
+  // Шаг 1: set — ждём пока ESP32 прочитает и очистит
+  const ok1 = await sendCmd("timer:set:"+total);
+  if(!ok1){toast("ESP32 не ответил на set");return;}
+  document.getElementById("timer-status").textContent="Запуск...";
+  // Шаг 2: start
+  const ok2 = await sendCmd("timer:start");
+  if(!ok2){toast("ESP32 не ответил на start");return;}
+  timerEndTime=Date.now()+total*1000;
   if(timerInterval)clearInterval(timerInterval);
   timerInterval=setInterval(updateTimerDisplay,1000);
   document.getElementById("timer-status").className="timer-status running";
-  toast("Таймер запущен");
+  toast("Таймер запущен ✓");
 };
+
 window.timerStop=async()=>{
-  await set(ref(db,"/commands/pending"),"timer:stop");
+  await sendCmd("timer:stop");
   if(timerInterval){clearInterval(timerInterval);timerInterval=null;}
   document.getElementById("timer-status").textContent="Остановлен";
   document.getElementById("timer-status").className="timer-status";
