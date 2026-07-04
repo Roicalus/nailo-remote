@@ -3,332 +3,544 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Nailo Remote</title>
+<title>Nailo</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap');
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  :root {
-    --bg:#0a0e0f; --surface:#111617; --surface2:#181f20; --surface3:#1e2829;
-    --border:#1f2e30; --border2:#2a3d3f;
-    --teal:#0fd4c4; --teal-dim:#0a9f93; --teal-glow:rgba(15,212,196,0.15); --teal-bg:rgba(15,212,196,0.08);
-    --text:#dff0f0; --muted:#5a7a7d; --muted2:#3d5a5c;
-    --green:#22d47a; --green-bg:rgba(34,212,122,0.08);
-    --red:#e05555; --red-bg:rgba(224,85,85,0.08);
-    --amber:#e0a030; --amber-bg:rgba(224,160,48,0.08);
-    --r:14px; --rs:10px;
-  }
-  body { background:var(--bg); color:var(--text); font-family:'Inter',-apple-system,sans-serif; min-height:100vh; font-size:14px; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
-  /* LOGIN */
-  #login-screen { display:flex; align-items:center; justify-content:center; min-height:100vh; padding:24px; background:radial-gradient(ellipse at 50% 0%,rgba(15,212,196,0.06) 0%,transparent 65%); }
-  .login-box { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:40px 28px; width:100%; max-width:360px; }
-  .login-logo { text-align:center; margin-bottom:32px; }
-  .login-logo h1 { font-family:'JetBrains Mono',monospace; font-size:32px; letter-spacing:6px; color:var(--teal); text-shadow:0 0 30px rgba(15,212,196,0.4); }
-  .login-logo p { color:var(--muted); font-size:12px; margin-top:6px; letter-spacing:1px; text-transform:uppercase; }
-  .field { margin-bottom:12px; }
-  .field input { width:100%; background:var(--surface2); border:1px solid var(--border2); border-radius:var(--rs); padding:14px 16px; color:var(--text); font-size:15px; font-family:inherit; outline:none; transition:border-color .2s,box-shadow .2s; }
-  .field input:focus { border-color:var(--teal); box-shadow:0 0 0 3px rgba(15,212,196,0.1); }
-  .btn-login { width:100%; margin-top:8px; background:var(--teal); color:#000; border:none; border-radius:var(--rs); padding:15px; font-size:15px; font-weight:700; cursor:pointer; transition:opacity .2s,transform .1s; }
-  .btn-login:active { transform:scale(0.98); opacity:.85; }
-  .login-error { color:var(--red); font-size:12px; text-align:center; margin-top:10px; min-height:16px; }
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 
-  /* TOPBAR */
-  #app-screen { display:none; }
-  .topbar { background:var(--surface); border-bottom:1px solid var(--border); padding:0 20px; height:56px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
-  .topbar-logo { font-family:'JetBrains Mono',monospace; font-size:16px; letter-spacing:4px; color:var(--teal); }
-  .topbar-right { display:flex; align-items:center; gap:10px; }
-  .status-pill { display:flex; align-items:center; gap:6px; background:var(--surface2); border:1px solid var(--border2); border-radius:20px; padding:5px 10px; font-size:11px; color:var(--muted); transition:all .3s; }
-  .status-pill.online { border-color:var(--green); color:var(--green); background:var(--green-bg); }
-  .status-pill.online .dot { background:var(--green); box-shadow:0 0 6px var(--green); }
-  .dot { width:6px; height:6px; border-radius:50%; background:var(--muted2); transition:all .3s; }
-  .btn-logout { background:none; border:1px solid var(--border2); color:var(--muted); border-radius:8px; padding:6px 10px; font-size:11px; cursor:pointer; transition:all .2s; }
-  .btn-logout:hover { border-color:var(--red); color:var(--red); }
+:root{
+  --bg:       #080c0d;
+  --s1:       #0e1517;
+  --s2:       #131d1f;
+  --s3:       #192224;
+  --border:   #1a2e31;
+  --border2:  #243c3f;
+  --teal:     #00e5cc;
+  --teal2:    #00b8a4;
+  --teal-bg:  rgba(0,229,204,0.06);
+  --teal-glow:rgba(0,229,204,0.2);
+  --green:    #00d97a;
+  --green-bg: rgba(0,217,122,0.07);
+  --red:      #ff4d4d;
+  --red-bg:   rgba(255,77,77,0.07);
+  --amber:    #ffb020;
+  --amber-bg: rgba(255,176,32,0.07);
+  --text:     #e0f0ef;
+  --text2:    #7a9e9d;
+  --text3:    #3d5e5d;
+  --mono:     'JetBrains Mono', monospace;
+}
 
-  /* LAYOUT */
-  .content { padding:16px; max-width:600px; margin:0 auto; padding-bottom:40px; }
-  .card { background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:18px; margin-bottom:12px; }
-  .card-title { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:1.5px; color:var(--muted); margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; }
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Inter',-apple-system,sans-serif;
+  font-size:14px;
+  line-height:1.5;
+  min-height:100vh;
+}
 
-  /* PC */
-  .pc-card { display:flex; align-items:center; gap:16px; background:var(--surface2); border:1.5px solid var(--border2); border-radius:var(--r); padding:18px; transition:all .25s; user-select:none; }
-  .pc-card.booting { border-color:var(--amber); background:var(--amber-bg); animation:pulse-amber 1.5s infinite; }
-  .pc-card.online  { border-color:var(--green); background:var(--green-bg); }
-  @keyframes pulse-amber{0%,100%{opacity:1}50%{opacity:.7}}
-  .pc-icon-wrap { width:52px; height:52px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:24px; background:var(--surface3); border:1px solid var(--border2); flex-shrink:0; transition:all .3s; }
-  .pc-card.online  .pc-icon-wrap { background:var(--green-bg); border-color:var(--green); }
-  .pc-card.booting .pc-icon-wrap { background:var(--amber-bg); border-color:var(--amber); }
-  .pc-info { flex:1; }
-  .pc-info h3 { font-size:15px; font-weight:600; margin-bottom:3px; }
-  .pc-info p  { font-size:12px; color:var(--muted); }
-  .pc-action { font-size:11px; font-weight:600; padding:7px 14px; border-radius:8px; border:1.5px solid; cursor:pointer; transition:all .2s; white-space:nowrap; flex-shrink:0; background:none; }
-  .pc-action.wake  { border-color:var(--teal); color:var(--teal); }
-  .pc-action.wake:active { background:var(--teal); color:#000; }
-  .pc-action.on    { border-color:var(--green); color:var(--green); cursor:default; }
+/* ═══════════════════════════════
+   LOGIN
+═══════════════════════════════ */
+#login-screen{
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;padding:24px;
+  background:
+    radial-gradient(ellipse 60% 40% at 50% -10%, rgba(0,229,204,0.08) 0%, transparent 70%);
+}
+.login-wrap{width:100%;max-width:340px;}
 
-  /* SENSORS */
-  .sensor-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
-  .sensor-box { background:var(--surface2); border:1px solid var(--border2); border-radius:var(--rs); padding:16px; text-align:center; transition:border-color .5s; }
-  .sensor-box.fresh { border-color:var(--teal); }
-  .sensor-emoji { font-size:22px; margin-bottom:8px; }
-  .sensor-num { font-family:'JetBrains Mono',monospace; font-size:28px; font-weight:500; color:var(--text); line-height:1; }
-  .sensor-num .unit { font-size:14px; color:var(--muted); }
-  .sensor-lbl { font-size:11px; color:var(--muted); margin-top:4px; }
-  .sensor-footer { display:flex; align-items:center; justify-content:space-between; }
-  .sensor-time { font-size:11px; color:var(--muted2); }
-  .btn-refresh { font-size:11px; font-weight:600; color:var(--teal); background:var(--teal-bg); border:1px solid var(--teal-dim); border-radius:8px; padding:5px 12px; cursor:pointer; transition:all .2s; }
-  .btn-refresh:active { background:var(--teal); color:#000; }
-  .btn-refresh.loading { opacity:.4; pointer-events:none; }
+.login-logo{text-align:center;margin-bottom:40px;}
+.login-logo-mark{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:64px;height:64px;border-radius:18px;
+  background:var(--s2);border:1px solid var(--border2);
+  margin-bottom:16px;
+  box-shadow:0 0 40px rgba(0,229,204,0.1);
+}
+.login-logo-mark svg{width:32px;height:32px;}
+.login-logo h1{
+  font-family:var(--mono);font-size:22px;letter-spacing:6px;
+  color:var(--teal);font-weight:500;
+}
+.login-logo p{color:var(--text3);font-size:11px;margin-top:5px;letter-spacing:2px;text-transform:uppercase;}
 
-  /* CHAT */
-  .chat-messages { background:var(--surface2); border:1px solid var(--border); border-radius:var(--rs); padding:12px; min-height:130px; max-height:240px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; margin-bottom:10px; scroll-behavior:smooth; }
-  .msg { max-width:82%; padding:9px 13px; border-radius:12px; font-size:13.5px; line-height:1.45; }
-  .msg.user { background:var(--teal); color:#000; align-self:flex-end; border-bottom-right-radius:3px; font-weight:500; }
-  .msg.kate { background:var(--surface3); border:1px solid var(--border2); color:var(--text); align-self:flex-start; border-bottom-left-radius:3px; }
-  .msg.sys  { color:var(--muted2); font-size:11px; align-self:center; background:none; padding:1px 0; }
-  .chat-row { display:flex; gap:8px; }
-  .chat-in  { flex:1; background:var(--surface2); border:1px solid var(--border2); border-radius:var(--rs); padding:12px 14px; color:var(--text); font-size:14px; font-family:inherit; outline:none; transition:border-color .2s; }
-  .chat-in:focus { border-color:var(--teal); }
-  .btn-send { background:var(--teal); color:#000; border:none; border-radius:var(--rs); padding:12px 16px; font-size:16px; font-weight:700; cursor:pointer; transition:opacity .2s,transform .1s; }
-  .btn-send:active { transform:scale(0.94); opacity:.8; }
+.login-field{margin-bottom:10px;}
+.login-field input{
+  width:100%;background:var(--s2);
+  border:1px solid var(--border2);border-radius:12px;
+  padding:14px 16px;color:var(--text);
+  font-size:15px;font-family:inherit;outline:none;
+  transition:border-color .2s,box-shadow .2s;
+}
+.login-field input::placeholder{color:var(--text3);}
+.login-field input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,229,204,0.08);}
 
-  /* DASHBOARD */
-  .panel-toggle-row { display:flex; gap:8px; }
-  .btn-panel { font-size:12px; font-weight:600; padding:6px 14px; border-radius:8px; border:1.5px solid; cursor:pointer; transition:all .2s; background:none; }
-  .btn-panel.on  { border-color:var(--teal);  color:var(--teal); }
-  .btn-panel.on.active  { background:var(--teal);  color:#000; }
-  .btn-panel.off { border-color:var(--muted2); color:var(--muted); }
-  .btn-panel.off.active { background:var(--red-bg); border-color:var(--red); color:var(--red); }
+.login-btn{
+  width:100%;margin-top:6px;
+  background:var(--teal);color:#000;
+  border:none;border-radius:12px;padding:15px;
+  font-size:14px;font-weight:700;letter-spacing:.5px;
+  cursor:pointer;transition:opacity .15s,transform .1s;
+  font-family:inherit;
+}
+.login-btn:active{transform:scale(0.98);opacity:.85;}
+.login-err{color:var(--red);font-size:12px;text-align:center;margin-top:10px;min-height:16px;}
 
-  .gauge-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; }
-  .gauge-item { background:var(--surface2); border:1px solid var(--border2); border-radius:var(--rs); padding:14px; transition:all .3s; }
-  .gauge-item.disabled { opacity:.4; }
-  .gauge-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
-  .gauge-label { font-size:12px; font-weight:500; color:var(--text); }
-  .gauge-val { font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:500; color:var(--teal); }
-  .gauge-sub { font-size:10px; color:var(--muted2); margin-top:4px; }
+/* ═══════════════════════════════
+   APP
+═══════════════════════════════ */
+#app{display:none;min-height:100vh;}
 
-  /* Toggle switch */
-  .toggle-sw { position:relative; display:inline-block; width:34px; height:19px; cursor:pointer; flex-shrink:0; }
-  .toggle-sw input { opacity:0; width:0; height:0; }
-  .sw-track { position:absolute; inset:0; background:var(--border2); border-radius:20px; transition:.2s; }
-  .sw-track::before { content:''; position:absolute; width:13px; height:13px; left:3px; bottom:3px; background:var(--muted); border-radius:50%; transition:.2s; }
-  .toggle-sw input:checked + .sw-track { background:var(--teal-dim); }
-  .toggle-sw input:checked + .sw-track::before { transform:translateX(15px); background:var(--teal); }
+/* TOPBAR */
+.topbar{
+  height:54px;padding:0 18px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--s1);border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:100;
+  backdrop-filter:blur(12px);
+}
+.topbar-logo{font-family:var(--mono);font-size:14px;letter-spacing:5px;color:var(--teal);font-weight:500;}
+.topbar-right{display:flex;align-items:center;gap:8px;}
 
-  /* TIMER */
-  .timer-block { margin-top:16px; background:var(--surface2); border:1px solid var(--border2); border-radius:var(--rs); padding:14px; }
-  .timer-label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:var(--muted); margin-bottom:10px; }
-  .timer-row { display:flex; align-items:center; gap:6px; margin-bottom:12px; }
-  .timer-row input { flex:1; background:var(--surface3); border:1px solid var(--border2); border-radius:8px; padding:10px 8px; color:var(--text); font-size:18px; font-family:'JetBrains Mono',monospace; text-align:center; outline:none; width:0; }
-  .timer-row input:focus { border-color:var(--teal); }
-  .timer-sep { color:var(--muted); font-size:18px; font-weight:600; }
-  .timer-btns { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
-  .btn-timer { border:1.5px solid; border-radius:8px; padding:9px 4px; font-size:12px; font-weight:600; cursor:pointer; transition:all .2s; background:none; }
-  .btn-timer.set   { border-color:var(--muted2); color:var(--muted); }
-  .btn-timer.set:active   { border-color:var(--teal); color:var(--teal); }
-  .btn-timer.start { border-color:var(--green); color:var(--green); }
-  .btn-timer.start:active { background:var(--green); color:#000; }
-  .btn-timer.stop  { border-color:var(--red); color:var(--red); }
-  .btn-timer.stop:active  { background:var(--red); color:#fff; }
-  .timer-status { font-size:11px; color:var(--muted2); margin-top:10px; text-align:center; font-family:'JetBrains Mono',monospace; }
-  .timer-status.running { color:var(--teal); }
-  .timer-status.done    { color:var(--amber); }
+.chip{
+  display:flex;align-items:center;gap:5px;
+  padding:5px 10px;border-radius:20px;
+  font-size:11px;font-weight:500;
+  background:var(--s2);border:1px solid var(--border2);
+  color:var(--text3);transition:all .3s;
+}
+.chip .dot{width:5px;height:5px;border-radius:50%;background:var(--text3);transition:all .3s;flex-shrink:0;}
+.chip.on{background:var(--green-bg);border-color:var(--green);color:var(--green);}
+.chip.on .dot{background:var(--green);box-shadow:0 0 6px var(--green);}
+.chip.warn{background:var(--amber-bg);border-color:var(--amber);color:var(--amber);}
+.chip.warn .dot{background:var(--amber);box-shadow:0 0 6px var(--amber);}
 
-  /* RELAY */
-  .relay-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-  .relay-btn { background:var(--surface2); border:1.5px solid var(--border2); border-radius:var(--rs); padding:14px 10px; display:flex; flex-direction:column; align-items:center; gap:5px; cursor:pointer; transition:all .2s; position:relative; user-select:none; }
-  .relay-btn:active { transform:scale(0.96); }
-  .relay-btn.active { border-color:var(--teal); background:var(--teal-bg); }
-  .relay-btn.pending { opacity:.5; pointer-events:none; }
-  .relay-tag { position:absolute; top:7px; right:8px; font-size:9px; font-weight:600; letter-spacing:.5px; color:var(--muted2); font-family:'JetBrains Mono',monospace; }
-  .relay-btn.active .relay-tag { color:var(--teal-dim); }
-  .relay-ico { font-size:20px; }
-  .relay-name { font-size:12px; color:var(--text); font-weight:500; text-align:center; }
-  .relay-state { font-size:10px; font-weight:700; letter-spacing:.5px; color:var(--muted2); text-transform:uppercase; }
-  .relay-btn.active .relay-state { color:var(--teal); }
-  .relay-all { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px; }
-  .btn-all { background:none; border:1px solid var(--border2); color:var(--muted); border-radius:8px; padding:9px; font-size:12px; font-weight:500; cursor:pointer; transition:all .2s; }
-  .btn-all:active { background:var(--teal-bg); border-color:var(--teal); color:var(--teal); }
+.btn-exit{
+  background:none;border:1px solid var(--border2);
+  color:var(--text3);border-radius:8px;
+  padding:5px 10px;font-size:11px;cursor:pointer;
+  font-family:inherit;transition:all .2s;
+}
+.btn-exit:hover{border-color:var(--red);color:var(--red);}
 
-  /* SERVO */
-  .servo-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-  .servo-item label { font-size:11px; color:var(--muted); display:block; margin-bottom:8px; font-weight:500; letter-spacing:.5px; }
-  .servo-item input[type="range"] { width:100%; accent-color:var(--teal); cursor:pointer; }
-  .servo-val { font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--teal); margin-top:5px; }
-  .servo-cmd { margin-top:12px; background:var(--surface2); border:1px solid var(--border2); border-radius:8px; padding:10px 14px; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted); }
-  .btn-servo { width:100%; margin-top:10px; background:var(--teal); color:#000; border:none; border-radius:var(--rs); padding:14px; font-size:14px; font-weight:700; cursor:pointer; transition:all .2s; }
-  .btn-servo:active { opacity:.8; transform:scale(0.98); }
-  .btn-servo.sent { background:var(--green); }
+/* SCROLL */
+.scroll{padding:14px 14px 40px;max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:12px;}
 
-  /* TOAST */
-  .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px); background:var(--surface3); border:1px solid var(--teal); color:var(--teal); border-radius:10px; padding:10px 20px; font-size:13px; font-weight:500; z-index:999; transition:transform .3s cubic-bezier(0.34,1.56,0.64,1); white-space:nowrap; }
-  .toast.show { transform:translateX(-50%) translateY(0); }
+/* CARD */
+.card{
+  background:var(--s1);border:1px solid var(--border);border-radius:16px;
+  overflow:hidden;
+}
+.card-head{
+  padding:14px 16px 0;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.card-label{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);}
+.card-body{padding:14px 16px;}
+.card-body.pt0{padding-top:0;}
+
+/* ═══════════════════════════════
+   PC BLOCK
+═══════════════════════════════ */
+.pc-block{
+  display:flex;align-items:center;gap:14px;
+  padding:16px;
+  background:var(--s2);border:1.5px solid var(--border2);
+  border-radius:14px;cursor:pointer;
+  transition:all .25s;user-select:none;
+  position:relative;overflow:hidden;
+}
+.pc-block::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 0% 50%, rgba(0,229,204,0.04) 0%, transparent 60%);
+  opacity:0;transition:opacity .3s;
+}
+.pc-block.online::before{opacity:1;}
+.pc-block.online{border-color:var(--green);}
+.pc-block.booting{border-color:var(--amber);animation:ab 1.4s ease-in-out infinite;}
+@keyframes ab{0%,100%{opacity:1}50%{opacity:.65}}
+
+.pc-icon{
+  width:48px;height:48px;border-radius:13px;
+  background:var(--s3);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;flex-shrink:0;transition:all .3s;
+}
+.pc-block.online .pc-icon{background:var(--green-bg);border-color:rgba(0,217,122,0.3);}
+.pc-block.booting .pc-icon{background:var(--amber-bg);border-color:rgba(255,176,32,0.3);}
+
+.pc-text{flex:1;min-width:0;}
+.pc-text h3{font-size:14px;font-weight:600;margin-bottom:3px;}
+.pc-text p{font-size:11px;color:var(--text2);}
+
+.pc-badge{
+  font-size:10px;font-weight:700;letter-spacing:.5px;
+  padding:5px 10px;border-radius:8px;border:1.5px solid;
+  flex-shrink:0;font-family:var(--mono);
+  transition:all .2s;
+}
+.pc-badge.wake{border-color:var(--teal);color:var(--teal);background:var(--teal-bg);}
+.pc-badge.active{border-color:var(--green);color:var(--green);background:var(--green-bg);}
+.pc-badge.loading{border-color:var(--amber);color:var(--amber);background:var(--amber-bg);}
+
+/* ═══════════════════════════════
+   CLIMATE
+═══════════════════════════════ */
+.climate-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.climate-tile{
+  background:var(--s2);border:1px solid var(--border2);
+  border-radius:12px;padding:14px 12px;
+  transition:border-color .4s;
+}
+.climate-tile.fresh{border-color:var(--teal);}
+.climate-icon{font-size:18px;margin-bottom:8px;}
+.climate-val{
+  font-family:var(--mono);font-size:24px;font-weight:500;
+  color:var(--text);line-height:1;
+}
+.climate-val small{font-size:13px;color:var(--text2);}
+.climate-lbl{font-size:10px;color:var(--text3);margin-top:5px;letter-spacing:.5px;}
+.climate-foot{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 0 2px;
+}
+.climate-time{font-size:10px;color:var(--text3);}
+.btn-refresh{
+  font-size:10px;font-weight:600;
+  background:var(--teal-bg);border:1px solid var(--teal2);
+  color:var(--teal);border-radius:7px;padding:4px 10px;
+  cursor:pointer;transition:all .15s;font-family:inherit;
+}
+.btn-refresh:active{background:var(--teal);color:#000;}
+.btn-refresh.spin{opacity:.4;pointer-events:none;}
+
+/* ═══════════════════════════════
+   PANEL (GAUGES)
+═══════════════════════════════ */
+.panel-head-row{display:flex;align-items:center;gap:8px;}
+.panel-switch{display:flex;background:var(--s2);border:1px solid var(--border2);border-radius:10px;overflow:hidden;}
+.psw-btn{
+  border:none;background:none;color:var(--text3);
+  padding:6px 14px;font-size:11px;font-weight:600;
+  cursor:pointer;transition:all .2s;font-family:inherit;
+  letter-spacing:.3px;
+}
+.psw-btn.active-on{ background:var(--teal);color:#000;}
+.psw-btn.active-off{background:var(--red-bg);color:var(--red);}
+
+.gauge-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
+.gauge-tile{
+  background:var(--s2);border:1px solid var(--border2);
+  border-radius:12px;padding:13px;
+  transition:all .2s;
+}
+.gauge-tile.off{opacity:.35;}
+.gauge-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.gauge-name{font-size:11px;color:var(--text2);font-weight:500;}
+.gauge-num{font-family:var(--mono);font-size:20px;color:var(--teal);font-weight:500;}
+.gauge-hint{font-size:9px;color:var(--text3);margin-top:4px;letter-spacing:.3px;}
+
+/* Toggle */
+.tog{position:relative;display:inline-block;width:32px;height:18px;cursor:pointer;flex-shrink:0;}
+.tog input{opacity:0;width:0;height:0;}
+.tog-track{position:absolute;inset:0;background:var(--border2);border-radius:18px;transition:.2s;}
+.tog-track::before{content:'';position:absolute;width:12px;height:12px;left:3px;bottom:3px;background:var(--text3);border-radius:50%;transition:.2s;}
+.tog input:checked+.tog-track{background:var(--teal2);}
+.tog input:checked+.tog-track::before{transform:translateX(14px);background:var(--teal);}
+
+/* TIMER */
+.timer-wrap{
+  margin-top:10px;background:var(--s2);
+  border:1px solid var(--border2);border-radius:12px;padding:14px;
+}
+.timer-title{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:10px;}
+.timer-inputs{display:flex;align-items:center;gap:4px;margin-bottom:12px;}
+.timer-inputs input{
+  flex:1;background:var(--s3);border:1px solid var(--border2);
+  border-radius:9px;padding:10px 6px;color:var(--text);
+  font-size:20px;font-family:var(--mono);text-align:center;
+  outline:none;min-width:0;
+  transition:border-color .2s;
+}
+.timer-inputs input:focus{border-color:var(--teal);}
+.timer-colon{color:var(--text3);font-size:18px;font-weight:600;font-family:var(--mono);}
+.timer-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;}
+.tbtn{
+  border:1.5px solid;border-radius:9px;padding:9px 4px;
+  font-size:11px;font-weight:600;cursor:pointer;
+  background:none;font-family:inherit;transition:all .15s;
+}
+.tbtn.set{border-color:var(--border2);color:var(--text3);}
+.tbtn.set:active{border-color:var(--teal);color:var(--teal);}
+.tbtn.go{border-color:var(--green);color:var(--green);}
+.tbtn.go:active{background:var(--green);color:#000;}
+.tbtn.stop{border-color:var(--red);color:var(--red);}
+.tbtn.stop:active{background:var(--red);color:#fff;}
+.timer-info{
+  margin-top:10px;text-align:center;
+  font-size:11px;color:var(--text3);font-family:var(--mono);
+  min-height:16px;
+}
+.timer-info.run{color:var(--teal);}
+.timer-info.done{color:var(--amber);}
+
+/* ═══════════════════════════════
+   CHAT
+═══════════════════════════════ */
+.chat-box{
+  background:var(--s2);border:1px solid var(--border);
+  border-radius:12px;padding:12px;
+  min-height:120px;max-height:220px;
+  overflow-y:auto;display:flex;flex-direction:column;gap:7px;
+  margin-bottom:10px;scroll-behavior:smooth;
+}
+.chat-box::-webkit-scrollbar{width:3px;}
+.chat-box::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+.bubble{max-width:80%;padding:8px 12px;border-radius:11px;font-size:13px;line-height:1.45;}
+.bubble.me{background:var(--teal);color:#000;align-self:flex-end;border-bottom-right-radius:3px;font-weight:500;}
+.bubble.kate{background:var(--s3);border:1px solid var(--border2);align-self:flex-start;border-bottom-left-radius:3px;}
+.bubble.sys{color:var(--text3);font-size:10px;align-self:center;background:none;padding:2px 0;}
+.chat-row{display:flex;gap:7px;}
+.chat-in{
+  flex:1;background:var(--s2);border:1px solid var(--border2);
+  border-radius:11px;padding:11px 14px;color:var(--text);
+  font-size:14px;font-family:inherit;outline:none;
+  transition:border-color .2s;
+}
+.chat-in:focus{border-color:var(--teal);}
+.chat-in::placeholder{color:var(--text3);}
+.chat-send{
+  background:var(--teal);color:#000;border:none;
+  border-radius:11px;padding:11px 15px;font-size:15px;
+  font-weight:700;cursor:pointer;transition:opacity .15s,transform .1s;
+}
+.chat-send:active{transform:scale(0.93);opacity:.8;}
+
+/* ═══════════════════════════════
+   RELAY
+═══════════════════════════════ */
+.relay-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.relay-tile{
+  background:var(--s2);border:1.5px solid var(--border2);
+  border-radius:12px;padding:14px 10px;
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  cursor:pointer;user-select:none;
+  transition:all .2s;position:relative;
+}
+.relay-tile:active{transform:scale(0.96);}
+.relay-tile.on{border-color:var(--teal);background:var(--teal-bg);}
+.relay-tile.busy{opacity:.45;pointer-events:none;}
+.relay-num{
+  position:absolute;top:7px;right:8px;
+  font-size:9px;font-family:var(--mono);color:var(--text3);letter-spacing:.5px;
+}
+.relay-tile.on .relay-num{color:var(--teal2);}
+.relay-ico{font-size:22px;}
+.relay-lbl{font-size:12px;font-weight:500;color:var(--text);}
+.relay-st{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);}
+.relay-tile.on .relay-st{color:var(--teal);}
+.relay-all-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
+.btn-all{
+  background:none;border:1px solid var(--border2);
+  color:var(--text3);border-radius:9px;padding:9px;
+  font-size:11px;font-weight:500;cursor:pointer;
+  font-family:inherit;transition:all .15s;
+}
+.btn-all:active{border-color:var(--teal);color:var(--teal);background:var(--teal-bg);}
+
+/* ═══════════════════════════════
+   TOAST
+═══════════════════════════════ */
+.toast{
+  position:fixed;bottom:22px;left:50%;
+  transform:translateX(-50%) translateY(70px);
+  background:var(--s2);border:1px solid var(--teal);
+  color:var(--teal);border-radius:10px;padding:9px 18px;
+  font-size:12px;font-weight:500;z-index:999;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+  white-space:nowrap;pointer-events:none;
+}
+.toast.show{transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
+<!-- ══ LOGIN ══ -->
 <div id="login-screen">
-  <div class="login-box">
-    <div class="login-logo"><h1>NAILO</h1><p>Система управления домом</p></div>
-    <div class="field"><input type="email" id="email" placeholder="Email" autocomplete="email"></div>
-    <div class="field"><input type="password" id="password" placeholder="Пароль" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
-    <button class="btn-login" onclick="doLogin()">Войти</button>
-    <div class="login-error" id="login-error"></div>
+  <div class="login-wrap">
+    <div class="login-logo">
+      <div class="login-logo-mark">
+        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="16" cy="16" r="12" stroke="#00e5cc" stroke-width="1.5"/>
+          <circle cx="16" cy="16" r="5" fill="#00e5cc" opacity=".2"/>
+          <circle cx="16" cy="16" r="2" fill="#00e5cc"/>
+          <line x1="16" y1="4" x2="16" y2="9" stroke="#00e5cc" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="16" y1="23" x2="16" y2="28" stroke="#00e5cc" stroke-width="1.5" stroke-linecap="round" opacity=".4"/>
+          <line x1="28" y1="16" x2="23" y2="16" stroke="#00e5cc" stroke-width="1.5" stroke-linecap="round" opacity=".4"/>
+          <line x1="4" y1="16" x2="9" y2="16" stroke="#00e5cc" stroke-width="1.5" stroke-linecap="round" opacity=".4"/>
+        </svg>
+      </div>
+      <h1>NAILO</h1>
+      <p>Система управления</p>
+    </div>
+    <div class="login-field"><input type="email" id="email" placeholder="Email" autocomplete="email"></div>
+    <div class="login-field"><input type="password" id="pass" placeholder="Пароль" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()"></div>
+    <button class="login-btn" onclick="login()">Войти</button>
+    <div class="login-err" id="login-err"></div>
   </div>
 </div>
 
-<!-- APP -->
-<div id="app-screen">
+<!-- ══ APP ══ -->
+<div id="app">
   <div class="topbar">
     <div class="topbar-logo">NAILO</div>
     <div class="topbar-right">
-      <div class="status-pill" id="pill-esp"><div class="dot"></div><span>ESP32</span></div>
-      <button class="btn-logout" onclick="doLogout()">Выйти</button>
+      <div class="chip" id="chip-esp"><div class="dot"></div><span>ESP32</span></div>
+      <div class="chip" id="chip-pc"><div class="dot"></div><span>ПК</span></div>
+      <button class="btn-exit" onclick="logout()">Выйти</button>
     </div>
   </div>
 
-  <div class="content">
+  <div class="scroll">
 
-    <!-- PC -->
+    <!-- ПК -->
     <div class="card">
-      <div class="card-title">Компьютер</div>
-      <div class="pc-card" id="pc-card">
-        <div class="pc-icon-wrap">🖥️</div>
-        <div class="pc-info">
-          <h3 id="pc-title">Выключен</h3>
-          <p id="pc-sub">ESP32 отправит Magic Packet</p>
+      <div class="card-head"><div class="card-label">Компьютер</div></div>
+      <div class="card-body">
+        <div class="pc-block" id="pc-block" onclick="wakePC()">
+          <div class="pc-icon" id="pc-icon">🖥️</div>
+          <div class="pc-text">
+            <h3 id="pc-title">Выключен</h3>
+            <p id="pc-sub">Нажми — ESP32 отправит Magic Packet</p>
+          </div>
+          <div class="pc-badge wake" id="pc-badge">ВКЛЮЧИТЬ</div>
         </div>
-        <button class="pc-action wake" id="pc-action" onclick="wakePC()">Включить</button>
       </div>
     </div>
 
     <!-- КЛИМАТ -->
     <div class="card">
-      <div class="card-title"><span>Климат</span></div>
-      <div class="sensor-row">
-        <div class="sensor-box" id="box-temp">
-          <div class="sensor-emoji">🌡️</div>
-          <div class="sensor-num" id="val-temp">—<span class="unit"> °C</span></div>
-          <div class="sensor-lbl">Дома</div>
+      <div class="card-head"><div class="card-label">Климат</div></div>
+      <div class="card-body">
+        <div class="climate-grid">
+          <div class="climate-tile" id="ct-home">
+            <div class="climate-icon">🌡</div>
+            <div class="climate-val" id="cv-home">—<small> °C</small></div>
+            <div class="climate-lbl">Дома</div>
+          </div>
+          <div class="climate-tile" id="ct-out">
+            <div class="climate-icon">🌤</div>
+            <div class="climate-val" id="cv-out">—<small> °C</small></div>
+            <div class="climate-lbl">Ташкент</div>
+          </div>
+          <div class="climate-tile" id="ct-hum">
+            <div class="climate-icon">💧</div>
+            <div class="climate-val" id="cv-hum">—<small> %</small></div>
+            <div class="climate-lbl">Влажность</div>
+          </div>
+          <div class="climate-tile" id="ct-feel">
+            <div class="climate-icon">🌬</div>
+            <div class="climate-val" id="cv-feel">—<small> °C</small></div>
+            <div class="climate-lbl">Ощущается</div>
+          </div>
         </div>
-        <div class="sensor-box" id="box-out">
-          <div class="sensor-emoji">🌤</div>
-          <div class="sensor-num" id="val-out">—<span class="unit"> °C</span></div>
-          <div class="sensor-lbl">Ташкент</div>
+        <div class="climate-foot">
+          <span class="climate-time" id="climate-time">Нет данных</span>
+          <button class="btn-refresh" id="btn-ref" onclick="refreshSensors()">↻ Обновить</button>
         </div>
-        <div class="sensor-box" id="box-hum">
-          <div class="sensor-emoji">💧</div>
-          <div class="sensor-num" id="val-hum">—<span class="unit"> %</span></div>
-          <div class="sensor-lbl">Влажность</div>
-        </div>
-        <div class="sensor-box" id="box-feel">
-          <div class="sensor-emoji">🌡</div>
-          <div class="sensor-num" id="val-feel">—<span class="unit"> °C</span></div>
-          <div class="sensor-lbl">Ощущается</div>
-        </div>
-      </div>
-      <div class="sensor-footer">
-        <span class="sensor-time" id="sensor-time">Нет данных</span>
-        <button class="btn-refresh" id="btn-refresh" onclick="refreshSensors()">↻ Обновить</button>
       </div>
     </div>
 
     <!-- ПРИБОРНАЯ ПАНЕЛЬ -->
     <div class="card">
-      <div class="card-title">
-        <span>Приборная панель</span>
-        <div class="panel-toggle-row">
-          <button class="btn-panel on"  id="btn-pon"  onclick="panelOn()">Вкл</button>
-          <button class="btn-panel off" id="btn-poff" onclick="panelOff()">Выкл</button>
+      <div class="card-head">
+        <div class="card-label">Приборная панель</div>
+        <div class="panel-switch">
+          <button class="psw-btn" id="psw-on"  onclick="panelOn()">ВКЛ</button>
+          <button class="psw-btn" id="psw-off" onclick="panelOff()">ВЫКЛ</button>
         </div>
       </div>
+      <div class="card-body pt0">
+        <div class="gauge-grid">
+          <div class="gauge-tile" id="gt-p">
+            <div class="gauge-top">
+              <span class="gauge-name">🌡 Дом (P)</span>
+              <label class="tog"><input type="checkbox" id="chk-p" checked onchange="setGauge('p',this.checked)"><span class="tog-track"></span></label>
+            </div>
+            <div class="gauge-num" id="gn-p">—°C</div>
+            <div class="gauge-hint">40°C → 0° · 0°C → 180°</div>
+          </div>
+          <div class="gauge-tile" id="gt-k">
+            <div class="gauge-top">
+              <span class="gauge-name">🌤 Улица (K)</span>
+              <label class="tog"><input type="checkbox" id="chk-k" checked onchange="setGauge('k',this.checked)"><span class="tog-track"></span></label>
+            </div>
+            <div class="gauge-num" id="gn-k">—°C</div>
+            <div class="gauge-hint">Ташкент · авто</div>
+          </div>
+          <div class="gauge-tile" id="gt-l">
+            <div class="gauge-top">
+              <span class="gauge-name">💧 Влажность (L)</span>
+              <label class="tog"><input type="checkbox" id="chk-l" checked onchange="setGauge('l',this.checked)"><span class="tog-track"></span></label>
+            </div>
+            <div class="gauge-num" id="gn-l">—%</div>
+            <div class="gauge-hint">80% → 0° · 20% → 180°</div>
+          </div>
+          <div class="gauge-tile" id="gt-b">
+            <div class="gauge-top">
+              <span class="gauge-name">⏱ Таймер (B)</span>
+              <label class="tog"><input type="checkbox" id="chk-b" checked onchange="setGauge('b',this.checked)"><span class="tog-track"></span></label>
+            </div>
+            <div class="gauge-num" id="gn-b">—</div>
+            <div class="gauge-hint">старт → 180° · конец → 0°</div>
+          </div>
+        </div>
 
-      <div class="gauge-grid">
-        <div class="gauge-item" id="gi-p">
-          <div class="gauge-header">
-            <span class="gauge-label">🌡 Дом</span>
-            <label class="toggle-sw"><input type="checkbox" id="chk-p" checked onchange="toggleGauge('p',this.checked)"><span class="sw-track"></span></label>
+        <div class="timer-wrap">
+          <div class="timer-title">Таймер</div>
+          <div class="timer-inputs">
+            <input type="number" id="t-h" min="0" max="23" value="0" placeholder="ч">
+            <span class="timer-colon">:</span>
+            <input type="number" id="t-m" min="0" max="59" value="5" placeholder="м">
+            <span class="timer-colon">:</span>
+            <input type="number" id="t-s" min="0" max="59" value="0" placeholder="с">
           </div>
-          <div class="gauge-val" id="gv-p">—°C</div>
-          <div class="gauge-sub">P · 40°C=0° · 0°C=180°</div>
-        </div>
-        <div class="gauge-item" id="gi-k">
-          <div class="gauge-header">
-            <span class="gauge-label">🌤 Улица</span>
-            <label class="toggle-sw"><input type="checkbox" id="chk-k" checked onchange="toggleGauge('k',this.checked)"><span class="sw-track"></span></label>
+          <div class="timer-actions">
+            <button class="tbtn set"  onclick="timerSet()">Задать</button>
+            <button class="tbtn go"   onclick="timerGo()">▶ Старт</button>
+            <button class="tbtn stop" onclick="timerStop()">■ Стоп</button>
           </div>
-          <div class="gauge-val" id="gv-k">—°C</div>
-          <div class="gauge-sub">K · Ташкент</div>
+          <div class="timer-info" id="t-info">Не задан</div>
         </div>
-        <div class="gauge-item" id="gi-l">
-          <div class="gauge-header">
-            <span class="gauge-label">💧 Влажность</span>
-            <label class="toggle-sw"><input type="checkbox" id="chk-l" checked onchange="toggleGauge('l',this.checked)"><span class="sw-track"></span></label>
-          </div>
-          <div class="gauge-val" id="gv-l">—%</div>
-          <div class="gauge-sub">L · 20%=180° · 80%=0°</div>
-        </div>
-        <div class="gauge-item" id="gi-b">
-          <div class="gauge-header">
-            <span class="gauge-label">⏱ Таймер</span>
-            <label class="toggle-sw"><input type="checkbox" id="chk-b" checked onchange="toggleGauge('b',this.checked)"><span class="sw-track"></span></label>
-          </div>
-          <div class="gauge-val" id="gv-b">—</div>
-          <div class="gauge-sub">B · старт=180° · конец=0°</div>
-        </div>
-      </div>
-
-      <!-- ТАЙМЕР -->
-      <div class="timer-block">
-        <div class="timer-label">Установить таймер</div>
-        <div class="timer-row">
-          <input type="number" id="t-h" min="0" max="23" value="0" placeholder="ч">
-          <span class="timer-sep">:</span>
-          <input type="number" id="t-m" min="0" max="59" value="5" placeholder="мин">
-          <span class="timer-sep">:</span>
-          <input type="number" id="t-s" min="0" max="59" value="0" placeholder="сек">
-        </div>
-        <div class="timer-btns">
-          <button class="btn-timer set"   onclick="timerSet()">Задать</button>
-          <button class="btn-timer start" onclick="timerStart()">▶ Старт</button>
-          <button class="btn-timer stop"  onclick="timerStop()">■ Стоп</button>
-        </div>
-        <div class="timer-status" id="timer-status">Таймер не задан</div>
       </div>
     </div>
 
     <!-- ЧАТ -->
     <div class="card">
-      <div class="card-title">Кейт</div>
-      <div class="chat-messages" id="chat-box"><div class="msg sys">Подключение...</div></div>
-      <div class="chat-row">
-        <input class="chat-in" id="chat-in" type="text" placeholder="Написать Кейт..." onkeydown="if(event.key==='Enter')sendMsg()">
-        <button class="btn-send" onclick="sendMsg()">▶</button>
+      <div class="card-head"><div class="card-label">Кейт</div></div>
+      <div class="card-body">
+        <div class="chat-box" id="chat-box"><div class="bubble sys">Подключение...</div></div>
+        <div class="chat-row">
+          <input class="chat-in" id="chat-in" type="text" placeholder="Написать Кейт..."
+            onkeydown="if(event.key==='Enter')sendMsg()">
+          <button class="chat-send" onclick="sendMsg()">▶</button>
+        </div>
       </div>
     </div>
 
     <!-- РЕЛЕ -->
     <div class="card">
-      <div class="card-title">Реле</div>
-      <div class="relay-grid" id="relay-grid"></div>
-      <div class="relay-all">
-        <button class="btn-all" onclick="relayAll(true)">⚡ Все включить</button>
-        <button class="btn-all" onclick="relayAll(false)">○ Все выключить</button>
+      <div class="card-head"><div class="card-label">Реле</div></div>
+      <div class="card-body">
+        <div class="relay-grid" id="relay-grid"></div>
+        <div class="relay-all-row">
+          <button class="btn-all" onclick="relayAll(true)">⚡ Все вкл</button>
+          <button class="btn-all" onclick="relayAll(false)">○ Все выкл</button>
+        </div>
       </div>
-    </div>
-
-    <!-- СЕРВО (ручное) -->
-    <div class="card">
-      <div class="card-title">Серво (ручное)</div>
-      <div class="servo-grid">
-        <div class="servo-item"><label>БАЗА (B)</label><input type="range" min="0" max="180" value="90" id="sv-b" oninput="updateServo()"><div class="servo-val" id="vb">90°</div></div>
-        <div class="servo-item"><label>ПЛЕЧО (P)</label><input type="range" min="0" max="180" value="90" id="sv-p" oninput="updateServo()"><div class="servo-val" id="vp">90°</div></div>
-        <div class="servo-item"><label>ЛОКОТЬ (L)</label><input type="range" min="0" max="180" value="90" id="sv-l" oninput="updateServo()"><div class="servo-val" id="vl">90°</div></div>
-        <div class="servo-item"><label>КАМЕРА (K)</label><input type="range" min="0" max="180" value="90" id="sv-k" oninput="updateServo()"><div class="servo-val" id="vk">90°</div></div>
-      </div>
-      <div class="servo-cmd" id="servo-cmd">servo:b90p90l90k90</div>
-      <button class="btn-servo" id="btn-servo" onclick="sendServos()">Отправить положение</button>
     </div>
 
   </div>
@@ -343,7 +555,7 @@ import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
 import { getDatabase, ref, set, onValue }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-const app = initializeApp({
+const FB = initializeApp({
   apiKey:"AIzaSyDdVxg4VLuhTP6diYR3ylwVUH5d_6TXQhE",
   authDomain:"nailo-343e0.firebaseapp.com",
   databaseURL:"https://nailo-343e0-default-rtdb.europe-west1.firebasedatabase.app",
@@ -352,321 +564,313 @@ const app = initializeApp({
   messagingSenderId:"400611042263",
   appId:"1:400611042263:web:979fc6905ed4f39b902192"
 });
-const auth = getAuth(app);
-const db   = getDatabase(app);
+const auth = getAuth(FB);
+const db   = getDatabase(FB);
 
-const RELAY_CFG = [
-  {name:"Свет",   icon:"💡"},{name:"Свет 2", icon:"💡"},
-  {name:"Реле 3", icon:"🔌"},{name:"Реле 4", icon:"🔌"},
-  {name:"Реле 5", icon:"🔌"},{name:"Реле 6", icon:"🔌"},
-  {name:"Реле 7", icon:"🔌"},{name:"Реле 8", icon:"🔌"},
+// Реле — меняй названия под свои устройства
+const RELAYS = [
+  {lbl:"Реле 1", ico:"🔌"},
+  {lbl:"Реле 2", ico:"🔌"},
+  {lbl:"Реле 3", ico:"🔌"},
+  {lbl:"Реле 4", ico:"🔌"},
+  {lbl:"Реле 5", ico:"🔌"},
 ];
 
-let relayStates  = new Array(8).fill(false);
-let relayPending = new Array(8).fill(false);
-let pcOnline = false, pcBooting = false, lastKate = "";
-let panelActive = false;
-let timerInterval = null, timerEndTime = 0, timerRunning = false;
+let rState   = new Array(5).fill(false);
+let rBusy    = new Array(5).fill(false);
+let pcOnline = false;
+let pcBoot   = false;
+let lastKate = "";
+let timerEnd = 0;
+let timerTick= null;
 
 // ── TOAST ──
-function toast(msg, dur=1800) {
-  const el = document.getElementById("toast");
-  el.textContent = msg; el.classList.add("show");
-  setTimeout(()=>el.classList.remove("show"), dur);
+function toast(msg, ms=2000){
+  const el=document.getElementById("toast");
+  el.textContent=msg; el.classList.add("show");
+  setTimeout(()=>el.classList.remove("show"), ms);
+}
+
+// ── sendCmd — отправить и дождаться очистки ──
+async function sendCmd(cmd, timeout=5000){
+  await set(ref(db,"/commands/pending"), cmd);
+  return new Promise(res=>{
+    const u=onValue(ref(db,"/commands/pending"),s=>{
+      if(s.val()===""||s.val()===null){u();res(true);}
+    });
+    setTimeout(()=>{u();res(false);}, timeout);
+  });
 }
 
 // ── AUTH ──
-window.doLogin = async () => {
-  const e = document.getElementById("email").value.trim();
-  const p = document.getElementById("password").value;
-  document.getElementById("login-error").textContent = "";
-  try { await signInWithEmailAndPassword(auth,e,p); }
-  catch { document.getElementById("login-error").textContent = "Неверный email или пароль"; }
+window.login=async()=>{
+  const e=document.getElementById("email").value.trim();
+  const p=document.getElementById("pass").value;
+  document.getElementById("login-err").textContent="";
+  try{await signInWithEmailAndPassword(auth,e,p);}
+  catch{document.getElementById("login-err").textContent="Неверный email или пароль";}
 };
-window.doLogout = ()=>signOut(auth);
+window.logout=()=>signOut(auth);
 
-onAuthStateChanged(auth, user=>{
-  if(user){
+onAuthStateChanged(auth,u=>{
+  if(u){
     document.getElementById("login-screen").style.display="none";
-    document.getElementById("app-screen").style.display="block";
-    buildRelays(); startListeners(); fetchOutdoorWeather();
+    document.getElementById("app").style.display="block";
+    buildRelays();
+    listen();
+    fetchWeather();
   } else {
     document.getElementById("login-screen").style.display="flex";
-    document.getElementById("app-screen").style.display="none";
+    document.getElementById("app").style.display="none";
   }
 });
 
-// ── ПОГОДА ТАШКЕНТ ──
-async function fetchOutdoorWeather() {
-  try {
-    // Open-Meteo — бесплатно, без ключа
-    const r = await fetch("https://api.open-meteo.com/v1/forecast?latitude=41.2995&longitude=69.2401&current=temperature_2m,apparent_temperature&timezone=Asia/Tashkent");
-    const d = await r.json();
-    const temp  = d.current.temperature_2m;
-    const feel  = d.current.apparent_temperature;
-    document.getElementById("val-out").innerHTML  = temp + '<span class="unit"> °C</span>';
-    document.getElementById("val-feel").innerHTML = feel + '<span class="unit"> °C</span>';
-    document.getElementById("box-out").classList.add("fresh");
-    setTimeout(()=>document.getElementById("box-out").classList.remove("fresh"),2000);
-    // Пишем в Firebase чтобы ESP32 двигал стрелку K
-    await set(ref(db,"/sensors/outdoor_temp"), temp);
-    document.getElementById("gv-k").textContent = temp + "°C";
-  } catch(e) { console.warn("Погода недоступна", e); }
-}
-// Обновлять погоду каждые 10 минут
-setInterval(fetchOutdoorWeather, 10*60*1000);
-
 // ── LISTENERS ──
-function startListeners() {
+function listen(){
   addMsg("sys","Подключено ✓");
 
-  onValue(ref(db,"/status/esp32_online"), s=>{
-    const on = s.val()===true;
-    const pill = document.getElementById("pill-esp");
-    pill.className = "status-pill"+(on?" online":"");
-    pill.querySelector("span").textContent = on ? "ESP32" : "ESP32 офлайн";
+  // ESP32 онлайн
+  onValue(ref(db,"/status/esp32_online"),s=>{
+    const on=s.val()===true;
+    const c=document.getElementById("chip-esp");
+    c.className="chip"+(on?" on":"");
+    c.querySelector("span").textContent=on?"ESP32":"ESP32 офлайн";
   });
 
-  onValue(ref(db,"/status/pc_online"), s=>{
-    const on = s.val()===true;
-    if(on && pcBooting){ pcBooting=false; toast("ПК включился ✓"); }
-    pcOnline=on; updatePcUI();
+  // ПК онлайн
+  onValue(ref(db,"/status/pc_online"),s=>{
+    const on=s.val()===true;
+    if(on&&pcBoot){pcBoot=false;toast("ПК включился ✓");}
+    pcOnline=on;
+    renderPC();
   });
 
-  onValue(ref(db,"/chat/kate_reply"), s=>{
+  // Kate reply
+  onValue(ref(db,"/chat/kate_reply"),s=>{
     const r=s.val();
-    if(r&&r!==""&&r!==lastKate){ lastKate=r; addMsg("kate",r); }
+    if(r&&r!==lastKate){lastKate=r;addMsg("kate",r);}
   });
 
-  onValue(ref(db,"/devices"), s=>{
+  // Devices
+  onValue(ref(db,"/devices"),s=>{
     const d=s.val()||{};
-    for(let i=1;i<=8;i++){
+    for(let i=1;i<=5;i++){
       const ns=!!d["relay"+i];
-      if(ns!==relayStates[i-1]){ relayStates[i-1]=ns; relayPending[i-1]=false; updateRelayUI(i); }
+      if(ns!==rState[i-1]){rState[i-1]=ns;rBusy[i-1]=false;renderRelay(i);}
     }
   });
 
-  onValue(ref(db,"/sensors"), s=>{
+  // Sensors
+  onValue(ref(db,"/sensors"),s=>{
     const d=s.val()||{};
     if(d.temperature!=null){
-      document.getElementById("val-temp").innerHTML=d.temperature+'<span class="unit"> °C</span>';
-      document.getElementById("gv-p").textContent=d.temperature+"°C";
-      document.getElementById("box-temp").classList.add("fresh");
-      setTimeout(()=>document.getElementById("box-temp").classList.remove("fresh"),2000);
+      document.getElementById("cv-home").innerHTML=d.temperature+'<small> °C</small>';
+      document.getElementById("gn-p").textContent=d.temperature+"°C";
+      flash("ct-home");
     }
     if(d.humidity!=null){
-      document.getElementById("val-hum").innerHTML=d.humidity+'<span class="unit"> %</span>';
-      document.getElementById("gv-l").textContent=d.humidity+"%";
-      document.getElementById("box-hum").classList.add("fresh");
-      setTimeout(()=>document.getElementById("box-hum").classList.remove("fresh"),2000);
+      document.getElementById("cv-hum").innerHTML=d.humidity+'<small> %</small>';
+      document.getElementById("gn-l").textContent=d.humidity+"%";
+      flash("ct-hum");
     }
     const now=new Date();
-    document.getElementById("sensor-time").textContent="Обновлено в "+now.toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit"});
-    document.getElementById("btn-refresh").classList.remove("loading");
+    document.getElementById("climate-time").textContent=
+      "Обновлено в "+now.toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit"});
+    document.getElementById("btn-ref").classList.remove("spin");
   });
 
-  onValue(ref(db,"/panel/on"), s=>{ panelActive=s.val()===true; updatePanelUI(); });
-
-  onValue(ref(db,"/timer/running"), s=>{
-    timerRunning=s.val()===true;
-    if(!timerRunning && timerInterval){ clearInterval(timerInterval); timerInterval=null; }
-  });
-  onValue(ref(db,"/timer/finished"), s=>{
+  // Timer finished
+  onValue(ref(db,"/timer/finished"),s=>{
     if(s.val()===true){
-      document.getElementById("timer-status").textContent="⏰ Время вышло!";
-      document.getElementById("timer-status").className="timer-status done";
-      toast("⏰ Таймер завершён!", 3000);
+      stopTick();
+      document.getElementById("t-info").textContent="⏰ Время вышло!";
+      document.getElementById("t-info").className="timer-info done";
+      toast("⏰ Таймер завершён!",3000);
     }
   });
+
+  // Panel state
+  onValue(ref(db,"/panel/on"),s=>{
+    const on=s.val()===true;
+    document.getElementById("psw-on").className= "psw-btn"+(on?" active-on":"");
+    document.getElementById("psw-off").className="psw-btn"+(!on?" active-off":"");
+  });
 }
 
+function flash(id){
+  const el=document.getElementById(id);
+  el.classList.add("fresh");
+  setTimeout(()=>el.classList.remove("fresh"),2000);
+}
+
+// ── WEATHER ──
+async function fetchWeather(){
+  try{
+    const r=await fetch("https://api.open-meteo.com/v1/forecast?latitude=41.2995&longitude=69.2401&current=temperature_2m,apparent_temperature&timezone=Asia/Tashkent");
+    const d=await r.json();
+    const t=d.current.temperature_2m;
+    const f=d.current.apparent_temperature;
+    document.getElementById("cv-out").innerHTML=t+'<small> °C</small>';
+    document.getElementById("cv-feel").innerHTML=f+'<small> °C</small>';
+    document.getElementById("gn-k").textContent=t+"°C";
+    flash("ct-out");
+    await set(ref(db,"/sensors/outdoor_temp"),t);
+  }catch(e){console.warn("Погода",e);}
+}
+setInterval(fetchWeather,10*60*1000);
+
 // ── PC ──
-function updatePcUI(){
-  const card=document.getElementById("pc-card");
-  const act =document.getElementById("pc-action");
-  if(pcBooting){
-    card.className="pc-card booting";
+function renderPC(){
+  const block=document.getElementById("pc-block");
+  const badge=document.getElementById("pc-badge");
+  const chip =document.getElementById("chip-pc");
+
+  chip.className="chip"+(pcOnline?" on":pcBoot?" warn":"");
+  chip.querySelector("span").textContent=pcOnline?"ПК онлайн":pcBoot?"Включается...":"ПК выкл";
+  chip.querySelector(".dot").style.background=pcOnline?"var(--green)":pcBoot?"var(--amber)":"var(--text3)";
+
+  if(pcBoot){
+    block.className="pc-block booting";
     document.getElementById("pc-title").textContent="Включается...";
-    document.getElementById("pc-sub").textContent="Magic Packet отправлен";
-    act.className="pc-action"; act.textContent="⏳"; act.onclick=null;
+    document.getElementById("pc-sub").textContent="Magic Packet отправлен, жду загрузки";
+    badge.className="pc-badge loading"; badge.textContent="ЖДЁМ"; badge.onclick=null;
   } else if(pcOnline){
-    card.className="pc-card online";
+    block.className="pc-block online";
     document.getElementById("pc-title").textContent="Онлайн";
-    document.getElementById("pc-sub").textContent="Кейт готова";
-    act.className="pc-action on"; act.textContent="● Активен"; act.onclick=null;
+    document.getElementById("pc-sub").textContent="Кейт готова к работе";
+    badge.className="pc-badge active"; badge.textContent="ОНЛАЙН"; badge.onclick=null;
+    block.onclick=null;
   } else {
-    card.className="pc-card";
+    block.className="pc-block";
     document.getElementById("pc-title").textContent="Выключен";
-    document.getElementById("pc-sub").textContent="ESP32 отправит Magic Packet";
-    act.className="pc-action wake"; act.textContent="Включить"; act.onclick=wakePC;
+    document.getElementById("pc-sub").textContent="Нажми — ESP32 отправит Magic Packet";
+    badge.className="pc-badge wake"; badge.textContent="ВКЛЮЧИТЬ";
+    block.onclick=wakePC;
   }
 }
+
 window.wakePC=async()=>{
-  if(pcOnline||pcBooting)return;
-  pcBooting=true; updatePcUI();
-  await set(ref(db,"/commands/pending"),"pc:wakeup");
-  toast("Сигнал включения отправлен");
-  setTimeout(()=>{ if(!pcOnline){pcBooting=false;updatePcUI();} },60000);
+  if(pcOnline||pcBoot)return;
+  pcBoot=true; renderPC();
+  const ok=await sendCmd("pc:wakeup");
+  if(ok) toast("Magic Packet отправлен ✓");
+  else   toast("ESP32 не ответил");
+  // Если через 90 сек не включился — сброс
+  setTimeout(()=>{if(!pcOnline){pcBoot=false;renderPC();}},90000);
 };
 
 // ── CHAT ──
 window.sendMsg=async()=>{
   const inp=document.getElementById("chat-in");
-  const text=inp.value.trim(); if(!text)return;
-  inp.value=""; addMsg("user",text); lastKate="";
+  const txt=inp.value.trim(); if(!txt)return;
+  inp.value=""; lastKate="";
+  addMsg("me",txt);
   await set(ref(db,"/chat/kate_reply"),"");
-  await set(ref(db,"/chat/user_message"),text);
+  await set(ref(db,"/chat/user_message"),txt);
 };
-function addMsg(type,text){
+function addMsg(type,txt){
   const box=document.getElementById("chat-box");
-  const div=document.createElement("div");
-  div.className="msg "+type;
-  div.textContent=type==="kate"?"Кейт: "+text:text;
-  box.appendChild(div); box.scrollTop=box.scrollHeight;
+  const d=document.createElement("div");
+  d.className="bubble "+type;
+  d.textContent=type==="kate"?"Кейт: "+txt:txt;
+  box.appendChild(d); box.scrollTop=box.scrollHeight;
 }
 
 // ── RELAY ──
 function buildRelays(){
-  const grid=document.getElementById("relay-grid"); grid.innerHTML="";
-  RELAY_CFG.forEach((cfg,i)=>{
-    const num=i+1, btn=document.createElement("div");
-    btn.className="relay-btn"; btn.id="rb"+num;
-    btn.innerHTML=`<span class="relay-tag">IN${num}</span><div class="relay-ico">${cfg.icon}</div><div class="relay-name">${cfg.name}</div><div class="relay-state" id="rs${num}">ВЫКЛ</div>`;
-    btn.onclick=()=>toggleRelay(num); grid.appendChild(btn);
+  const g=document.getElementById("relay-grid"); g.innerHTML="";
+  RELAYS.forEach((r,i)=>{
+    const n=i+1, el=document.createElement("div");
+    el.className="relay-tile"; el.id="rt"+n;
+    el.innerHTML=`<span class="relay-num">IN${n}</span><div class="relay-ico">${r.ico}</div><div class="relay-lbl">${r.lbl}</div><div class="relay-st" id="rs${n}">ВЫКЛ</div>`;
+    el.onclick=()=>toggleRelay(n);
+    g.appendChild(el);
   });
 }
-window.toggleRelay=async(num)=>{
-  if(relayPending[num-1])return;
-  relayPending[num-1]=true;
-  document.getElementById("rb"+num).classList.add("pending");
-  const ns=!relayStates[num-1];
-  await set(ref(db,"/commands/pending"),`relay${num}:${ns?"on":"off"}`);
-  setTimeout(()=>{ relayPending[num-1]=false; document.getElementById("rb"+num).classList.remove("pending"); },3000);
+window.toggleRelay=async(n)=>{
+  if(rBusy[n-1])return;
+  rBusy[n-1]=true;
+  document.getElementById("rt"+n).classList.add("busy");
+  const ns=!rState[n-1];
+  const ok=await sendCmd(`relay${n}:${ns?"on":"off"}`);
+  if(!ok){rBusy[n-1]=false;document.getElementById("rt"+n).classList.remove("busy");toast("ESP32 не ответил");}
 };
 window.relayAll=async(on)=>{
-  await set(ref(db,"/commands/pending"),"relay:all:"+(on?"on":"off"));
+  await sendCmd("relay:all:"+(on?"on":"off"));
   toast(on?"Все реле включены":"Все реле выключены");
 };
-function updateRelayUI(num){
-  const btn=document.getElementById("rb"+num), st=document.getElementById("rs"+num);
-  if(!btn)return;
-  const on=relayStates[num-1];
-  btn.classList.toggle("active",on); btn.classList.remove("pending");
-  st.textContent=on?"ВКЛ":"ВЫКЛ";
+function renderRelay(n){
+  const el=document.getElementById("rt"+n),st=document.getElementById("rs"+n);
+  if(!el)return;
+  el.classList.toggle("on",rState[n-1]); el.classList.remove("busy");
+  st.textContent=rState[n-1]?"ВКЛ":"ВЫКЛ";
 }
 
 // ── SENSORS ──
 window.refreshSensors=async()=>{
-  document.getElementById("btn-refresh").classList.add("loading");
-  document.getElementById("sensor-time").textContent="Запрос...";
-  await set(ref(db,"/commands/pending"),"sensors:get");
-  fetchOutdoorWeather();
-  setTimeout(()=>document.getElementById("btn-refresh").classList.remove("loading"),5000);
+  document.getElementById("btn-ref").classList.add("spin");
+  document.getElementById("climate-time").textContent="Запрос...";
+  await sendCmd("sensors:get");
+  fetchWeather();
+  setTimeout(()=>document.getElementById("btn-ref").classList.remove("spin"),6000);
 };
 
 // ── PANEL ──
-function updatePanelUI(){
-  document.getElementById("btn-pon").classList.toggle("active", panelActive);
-  document.getElementById("btn-poff").classList.toggle("active",!panelActive);
-}
-window.panelOn=async()=>{ await set(ref(db,"/commands/pending"),"panel:on"); toast("Панель включена"); };
-window.panelOff=async()=>{ await set(ref(db,"/commands/pending"),"panel:off"); toast("Панель выключена — стрелки в 180°"); };
-window.toggleGauge=async(axis,on)=>{
-  document.getElementById("gi-"+axis).classList.toggle("disabled",!on);
-  await set(ref(db,"/commands/pending"),`gauge:${axis}:${on?"on":"off"}`);
+window.panelOn =async()=>{await sendCmd("panel:on"); toast("Панель включена");};
+window.panelOff=async()=>{await sendCmd("panel:off");toast("Панель выключена — стрелки в 180°");};
+window.setGauge=async(ax,on)=>{
+  document.getElementById("gt-"+ax).classList.toggle("off",!on);
+  await sendCmd(`gauge:${ax}:${on?"on":"off"}`);
 };
 
 // ── TIMER ──
-// Отправить команду и дождаться пока ESP32 её очистит
-async function sendCmd(cmd, timeoutMs=4000) {
-  await set(ref(db,"/commands/pending"), cmd);
-  return new Promise(resolve=>{
-    const unsub = onValue(ref(db,"/commands/pending"), s=>{
-      const val = s.val();
-      if(val===""||val===null){ unsub(); resolve(true); }
-    });
-    setTimeout(()=>{ unsub(); resolve(false); }, timeoutMs);
-  });
+function getTotal(){
+  return (parseInt(document.getElementById("t-h").value)||0)*3600
+        +(parseInt(document.getElementById("t-m").value)||0)*60
+        +(parseInt(document.getElementById("t-s").value)||0);
 }
+function pad(n){return String(n).padStart(2,"0");}
+function stopTick(){if(timerTick){clearInterval(timerTick);timerTick=null;}}
 
 window.timerSet=async()=>{
-  const h=parseInt(document.getElementById("t-h").value)||0;
-  const m=parseInt(document.getElementById("t-m").value)||0;
-  const s=parseInt(document.getElementById("t-s").value)||0;
-  const total=h*3600+m*60+s;
-  if(total<=0){toast("Задай время больше 0");return;}
-  document.getElementById("timer-status").textContent="Отправка...";
-  const ok = await sendCmd("timer:set:"+total);
+  const tot=getTotal(); if(tot<=0){toast("Задай время больше 0");return;}
+  document.getElementById("t-info").textContent="Отправка...";
+  const ok=await sendCmd("timer:set:"+tot);
   if(ok){
-    document.getElementById("timer-status").textContent=`Задан: ${pad(h)}:${pad(m)}:${pad(s)}`;
-    document.getElementById("timer-status").className="timer-status";
+    const h=Math.floor(tot/3600),m=Math.floor(tot%3600/60),s=tot%60;
+    document.getElementById("t-info").textContent=`Задан: ${pad(h)}:${pad(m)}:${pad(s)}`;
+    document.getElementById("t-info").className="timer-info";
     toast("Таймер задан ✓");
-  } else {
-    toast("ESP32 не ответил");
-  }
+  } else toast("ESP32 не ответил");
 };
 
-window.timerStart=async()=>{
-  const h=parseInt(document.getElementById("t-h").value)||0;
-  const m=parseInt(document.getElementById("t-m").value)||0;
-  const s=parseInt(document.getElementById("t-s").value)||0;
-  const total=h*3600+m*60+s;
-  if(total<=0){toast("Сначала задай время");return;}
-  document.getElementById("timer-status").textContent="Установка...";
-  // Шаг 1: set — ждём пока ESP32 прочитает и очистит
-  const ok1 = await sendCmd("timer:set:"+total);
-  if(!ok1){toast("ESP32 не ответил на set");return;}
-  document.getElementById("timer-status").textContent="Запуск...";
-  // Шаг 2: start
-  const ok2 = await sendCmd("timer:start");
-  if(!ok2){toast("ESP32 не ответил на start");return;}
-  timerEndTime=Date.now()+total*1000;
-  if(timerInterval)clearInterval(timerInterval);
-  timerInterval=setInterval(updateTimerDisplay,1000);
-  document.getElementById("timer-status").className="timer-status running";
+window.timerGo=async()=>{
+  const tot=getTotal(); if(tot<=0){toast("Сначала задай время");return;}
+  const info=document.getElementById("t-info");
+  info.textContent="Установка...";
+  const ok1=await sendCmd("timer:set:"+tot,5000); if(!ok1){toast("Нет ответа (set)");return;}
+  info.textContent="Запуск...";
+  const ok2=await sendCmd("timer:start",5000);    if(!ok2){toast("Нет ответа (start)");return;}
+  timerEnd=Date.now()+tot*1000;
+  stopTick();
+  timerTick=setInterval(()=>{
+    const rem=Math.max(0,Math.ceil((timerEnd-Date.now())/1000));
+    const h=Math.floor(rem/3600),m=Math.floor(rem%3600/60),s=rem%60;
+    document.getElementById("gn-b").textContent=`${pad(h)}:${pad(m)}:${pad(s)}`;
+    info.textContent=`Осталось: ${pad(h)}:${pad(m)}:${pad(s)}`;
+    info.className="timer-info run";
+    if(rem<=0)stopTick();
+  },1000);
   toast("Таймер запущен ✓");
 };
 
 window.timerStop=async()=>{
+  stopTick();
   await sendCmd("timer:stop");
-  if(timerInterval){clearInterval(timerInterval);timerInterval=null;}
-  document.getElementById("timer-status").textContent="Остановлен";
-  document.getElementById("timer-status").className="timer-status";
-  document.getElementById("gv-b").textContent="—";
+  document.getElementById("t-info").textContent="Остановлен";
+  document.getElementById("t-info").className="timer-info";
+  document.getElementById("gn-b").textContent="—";
   toast("Таймер остановлен");
-};
-function getTimerSecs(){
-  const h=parseInt(document.getElementById("t-h").value)||0;
-  const m=parseInt(document.getElementById("t-m").value)||0;
-  const s=parseInt(document.getElementById("t-s").value)||0;
-  return h*3600+m*60+s;
-}
-function updateTimerDisplay(){
-  const rem=Math.max(0,Math.ceil((timerEndTime-Date.now())/1000));
-  const h=Math.floor(rem/3600), m=Math.floor((rem%3600)/60), s=rem%60;
-  document.getElementById("gv-b").textContent=`${pad(h)}:${pad(m)}:${pad(s)}`;
-  document.getElementById("timer-status").textContent=`Осталось: ${pad(h)}:${pad(m)}:${pad(s)}`;
-  if(rem<=0){clearInterval(timerInterval);timerInterval=null;}
-}
-function pad(n){return String(n).padStart(2,"0");}
-
-// ── SERVO MANUAL ──
-window.updateServo=()=>{
-  const b=document.getElementById("sv-b").value, p=document.getElementById("sv-p").value;
-  const l=document.getElementById("sv-l").value, k=document.getElementById("sv-k").value;
-  document.getElementById("vb").textContent=b+"°"; document.getElementById("vp").textContent=p+"°";
-  document.getElementById("vl").textContent=l+"°"; document.getElementById("vk").textContent=k+"°";
-  document.getElementById("servo-cmd").textContent=`servo:b${b}p${p}l${l}k${k}`;
-};
-window.sendServos=async()=>{
-  const b=document.getElementById("sv-b").value, p=document.getElementById("sv-p").value;
-  const l=document.getElementById("sv-l").value, k=document.getElementById("sv-k").value;
-  const cmd=`servo:b${b}p${p}l${l}k${k}`;
-  const btn=document.getElementById("btn-servo");
-  await set(ref(db,"/commands/pending"),cmd);
-  btn.classList.add("sent"); btn.textContent="Отправлено ✓";
-  setTimeout(()=>{btn.classList.remove("sent");btn.textContent="Отправить положение";},1500);
-  toast("Положение отправлено");
 };
 </script>
 </body>
